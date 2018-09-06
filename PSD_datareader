@@ -1,0 +1,36 @@
+    def Downloader(self):
+        popup = tk.Toplevel()
+        screen_width = popup.winfo_screenwidth()
+        screen_height = popup.winfo_screenheight()
+
+        # calculate position x and y coordinates
+        x = (screen_width / 2) - (100 / 2)
+        y = (screen_height / 2) - (66 / 2)
+        popup.geometry('%dx%d+%d+%d' % (100, 66, x, y))
+
+        tk.Label(popup, text="Data file is being loaded").grid(row=0, column=0)
+        progress = 0
+        progress_var = tk.DoubleVar()
+        progress_bar = ttk.Progressbar(popup, variable=progress_var, maximum=256)
+        progress_bar.grid(row=1, column=0)  # .pack(fill=tk.X, expand=1, side=tk.BOTTOM)
+        popup.pack_slaves()
+        progress_step = float(1)
+
+        name = askopenfilename(initialdir="C:/Users/Александр",
+                               filetypes=(("Data File", "*.003"), ("All Files", "*.*")),
+                               title="Choose a file.")
+        print(name)
+
+        try:
+            with open(name, 'rb') as UseFile:
+                for y in range(0, 256):
+                    popup.update()
+                    for x in range(0, 256):
+                        for t in range(0, 512):
+                            carrier[y, x, t] = int.from_bytes(UseFile.read(4), byteorder='little', signed=False)
+                    progress += progress_step
+                    progress_var.set(progress)
+        except:
+            print("No file exists")
+            popup.destroy()
+        popup.destroy()
